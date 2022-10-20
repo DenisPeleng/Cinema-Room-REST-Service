@@ -1,11 +1,8 @@
 package cinema;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CinemaRoomController {
@@ -16,4 +13,18 @@ public class CinemaRoomController {
 
         return cinemaRoom;
     }
+
+    @PostMapping("/purchase")
+    public ResponseEntity<?> buyTicket(@RequestBody Seat seatToBook) {
+        if (cinemaRoom.isNotCorrectColumn(seatToBook.getColumn(), cinemaRoom)
+                || cinemaRoom.isNotCorrectRow(seatToBook.getRow(), cinemaRoom)) {
+            return ErrorResponse.OutOfBoundsCinemaException();
+        }
+        if (cinemaRoom.isTaken(seatToBook)) {
+            return ErrorResponse.TicketAlreadyPurchasedException();
+        }
+        return new ResponseEntity<>(cinemaRoom.bookSeat(seatToBook), HttpStatus.OK);
+    }
+
 }
+
