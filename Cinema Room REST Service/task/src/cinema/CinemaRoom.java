@@ -9,6 +9,17 @@ public class CinemaRoom {
     private int totalColumns;
     private List<Seat> availableSeats;
 
+    public CinemaRoom(int totalRows, int totalColumns) {
+        this.totalRows = totalRows;
+        this.totalColumns = totalColumns;
+        availableSeats = new ArrayList<>();
+        for (int i = 1; i <= totalColumns; i++) {
+            for (int j = 1; j <= totalRows; j++) {
+                availableSeats.add(new Seat(j, i, i < 5 ? 10 : 8));
+            }
+        }
+    }
+
     public List<Seat> getAvailableSeats() {
         return availableSeats;
     }
@@ -33,22 +44,6 @@ public class CinemaRoom {
         this.totalColumns = totalColumns;
     }
 
-    CinemaRoom(int totalRows, int totalColumns) {
-        this.totalRows = totalRows;
-        this.totalColumns = totalColumns;
-        availableSeats = new ArrayList<>();
-        for (int i = 0; i < totalColumns; i++) {
-            for (int j = 0; j < totalRows; j++) {
-                int price = 10;
-                if (i > 8) {
-                    price = 8;
-                }
-                Seat newSeat = new Seat(j + 1, i + 1);
-                newSeat.setPrice(price);
-                availableSeats.add(newSeat);
-            }
-        }
-    }
 
     private int getIndexOfSeat(Seat seat) {
         for (int i = 0; i < availableSeats.size(); i++) {
