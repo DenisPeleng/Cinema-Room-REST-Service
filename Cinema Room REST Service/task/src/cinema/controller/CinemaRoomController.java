@@ -1,6 +1,7 @@
-package cinema;
+package cinema.controller;
 
-import cinema.Exceptions.*;
+import cinema.exception.*;
+import cinema.model.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

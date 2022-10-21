@@ -1,4 +1,4 @@
-package cinema;
+package cinema.model;
 
 import java.util.UUID;
 

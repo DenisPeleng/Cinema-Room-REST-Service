@@ -1,5 +1,4 @@
-package cinema;
-
+package cinema.model;
 public class BookedTicket {
     private String token;
     private Ticket ticket;

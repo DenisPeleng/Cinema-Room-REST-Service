@@ -1,4 +1,4 @@
-package cinema;
+package cinema.model;
 
 public class Ticket extends Seat {
     private int price;
