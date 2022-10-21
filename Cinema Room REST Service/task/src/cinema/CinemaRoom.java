@@ -11,6 +11,7 @@ public class CinemaRoom {
     private int totalColumns;
     private List<Ticket> availableSeats;
     private List<BookedTicket> bookedTickets;
+    private int currentIncome;
 
     public CinemaRoom(int totalRows, int totalColumns) {
         this.totalRows = totalRows;
@@ -22,6 +23,7 @@ public class CinemaRoom {
             }
         }
         this.bookedTickets = new ArrayList<>();
+        this.currentIncome = 0;
     }
 
 
@@ -40,6 +42,7 @@ public class CinemaRoom {
     public void setTotalRows(int totalRows) {
         this.totalRows = totalRows;
     }
+
     @JsonIgnore
     public List<BookedTicket> getBookedTickets() {
         return bookedTickets;
@@ -55,6 +58,10 @@ public class CinemaRoom {
 
     public void setTotalColumns(int totalColumns) {
         this.totalColumns = totalColumns;
+    }
+    @JsonIgnore
+    public int getCurrentIncome() {
+        return currentIncome;
     }
 
 
@@ -75,6 +82,7 @@ public class CinemaRoom {
         ticketToBook.setTaken(true);
         BookedTicket bookedTicket = new BookedTicket(ticketToBook);
         bookedTickets.add(bookedTicket);
+        currentIncome += ticketToBook.getPrice();
         return bookedTicket;
     }
 
@@ -106,11 +114,25 @@ public class CinemaRoom {
         ) {
             if (bTicket.getToken().equals(token)) {
                 bookedTickets.remove(bTicket);
-                Ticket ticket =bTicket.getTicket();
+                Ticket ticket = bTicket.getTicket();
                 ticket.setTaken(false);
+                currentIncome -= ticket.getPrice();
                 return ticket;
             }
         }
         return null;
+    }
+
+    public boolean isCorrectStatPassword(String password) {
+        String passwordStat = "super_secret";
+        return passwordStat.equals(password);
+    }
+    @JsonIgnore
+    public int getNumberOfAvailableSeats() {
+        return availableSeats.size() - getNumberOfBookedSeats();
+    }
+    @JsonIgnore
+    public int getNumberOfBookedSeats() {
+        return bookedTickets.size();
     }
 }

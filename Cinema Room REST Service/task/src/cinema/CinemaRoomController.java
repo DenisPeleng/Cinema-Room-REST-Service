@@ -4,7 +4,6 @@ import cinema.Exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Map;
 
 @RestController
@@ -19,8 +18,7 @@ public class CinemaRoomController {
 
     @PostMapping("/purchase")
     public ResponseEntity<?> buyTicket(@RequestBody Seat seatToBook) {
-        if (cinemaRoom.isNotCorrectColumn(seatToBook.getColumn(), cinemaRoom)
-                || cinemaRoom.isNotCorrectRow(seatToBook.getRow(), cinemaRoom)) {
+        if (cinemaRoom.isNotCorrectColumn(seatToBook.getColumn(), cinemaRoom) || cinemaRoom.isNotCorrectRow(seatToBook.getRow(), cinemaRoom)) {
             throw new OutOfBoundsCinemaException("The number of a row or a column is out of bounds!");
         }
         if (cinemaRoom.isTaken(seatToBook)) {
@@ -39,11 +37,20 @@ public class CinemaRoomController {
         return new ResponseEntity<>(Map.of("returned_ticket", returnedTicket), HttpStatus.OK);
     }
 
+    @PostMapping("/stats")
+    public ResponseEntity<?> stats(@RequestParam(required = false) String password) {
+
+        if (password == null || !cinemaRoom.isCorrectStatPassword(password)) {
+            throw new IllegalStatsPasswordException("The password is wrong!");
+        }
+        return new ResponseEntity<>(new Stats(cinemaRoom.getCurrentIncome(), cinemaRoom.getNumberOfAvailableSeats(), getCinemaRoomSeats().getNumberOfBookedSeats()), HttpStatus.OK);
+    }
 
     @ExceptionHandler(OutOfBoundsCinemaException.class)
     public ResponseEntity<?> handleOutOfBoundsCinemaException(OutOfBoundsCinemaException ex) {
         return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(IllegalTokenException.class)
     public ResponseEntity<?> handleIllegalTokenException(IllegalTokenException ex) {
         return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
@@ -52,6 +59,11 @@ public class CinemaRoomController {
     @ExceptionHandler(TicketAlreadyPurchasedException.class)
     public ResponseEntity<?> handleTicketAlreadyPurchasedException(TicketAlreadyPurchasedException ex) {
         return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({IllegalStatsPasswordException.class})
+    public ResponseEntity<?> handleIllegalStatsPasswordException(IllegalStatsPasswordException ex) {
+        return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 }
 
