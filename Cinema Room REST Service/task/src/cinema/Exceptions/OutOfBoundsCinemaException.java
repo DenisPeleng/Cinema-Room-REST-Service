@@ -1,4 +1,4 @@
-package cinema;
+package cinema.Exceptions;
 
 public class OutOfBoundsCinemaException extends IllegalArgumentException {
 

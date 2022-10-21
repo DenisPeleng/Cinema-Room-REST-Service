@@ -1,5 +1,6 @@
 package cinema;
 
+import cinema.Exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +26,26 @@ public class CinemaRoomController {
         if (cinemaRoom.isTaken(seatToBook)) {
             throw new TicketAlreadyPurchasedException("The ticket has been already purchased!");
         }
-        return new ResponseEntity<>(cinemaRoom.bookSeat(seatToBook), HttpStatus.OK);
+        return new ResponseEntity<>(cinemaRoom.bookTicket(seatToBook), HttpStatus.OK);
     }
+
+    @PostMapping("/return")
+    public ResponseEntity<?> returnTicket(@RequestBody TokenUUID tokenUUID) {
+        String token = tokenUUID.getToken();
+        if (!cinemaRoom.isTokenExist(token)) {
+            throw new IllegalTokenException("Wrong token!");
+        }
+        Ticket returnedTicket = cinemaRoom.returnTicket(token);
+        return new ResponseEntity<>(Map.of("returned_ticket", returnedTicket), HttpStatus.OK);
+    }
+
 
     @ExceptionHandler(OutOfBoundsCinemaException.class)
     public ResponseEntity<?> handleOutOfBoundsCinemaException(OutOfBoundsCinemaException ex) {
+        return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(IllegalTokenException.class)
+    public ResponseEntity<?> handleIllegalTokenException(IllegalTokenException ex) {
         return new ResponseEntity<>(Map.of("error", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 

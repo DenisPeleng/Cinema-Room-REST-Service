@@ -1,5 +1,7 @@
 package cinema;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,8 @@ public class CinemaRoom {
 
     private int totalRows;
     private int totalColumns;
-    private List<Seat> availableSeats;
+    private List<Ticket> availableSeats;
+    private List<BookedTicket> bookedTickets;
 
     public CinemaRoom(int totalRows, int totalColumns) {
         this.totalRows = totalRows;
@@ -15,16 +18,18 @@ public class CinemaRoom {
         availableSeats = new ArrayList<>();
         for (int i = 1; i <= totalColumns; i++) {
             for (int j = 1; j <= totalRows; j++) {
-                availableSeats.add(new Seat(j, i, i < 5 ? 10 : 8));
+                availableSeats.add(new Ticket(j, i, j < 5 ? 10 : 8));
             }
         }
+        this.bookedTickets = new ArrayList<>();
     }
 
-    public List<Seat> getAvailableSeats() {
+
+    public List<Ticket> getAvailableSeats() {
         return availableSeats;
     }
 
-    public void setAvailableSeats(List<Seat> availableSeats) {
+    public void setAvailableSeats(List<Ticket> availableSeats) {
         this.availableSeats = availableSeats;
     }
 
@@ -34,6 +39,14 @@ public class CinemaRoom {
 
     public void setTotalRows(int totalRows) {
         this.totalRows = totalRows;
+    }
+    @JsonIgnore
+    public List<BookedTicket> getBookedTickets() {
+        return bookedTickets;
+    }
+
+    public void setBookedTickets(List<BookedTicket> bookedTickets) {
+        this.bookedTickets = bookedTickets;
     }
 
     public int getTotalColumns() {
@@ -56,11 +69,13 @@ public class CinemaRoom {
         return -1;
     }
 
-    public Seat bookSeat(Seat seat) {
+    public BookedTicket bookTicket(Seat seat) {
         int index = getIndexOfSeat(seat);
-        Seat seatToBook = availableSeats.get(index);
-        seatToBook.setTaken(true);
-        return seatToBook;
+        Ticket ticketToBook = availableSeats.get(index);
+        ticketToBook.setTaken(true);
+        BookedTicket bookedTicket = new BookedTicket(ticketToBook);
+        bookedTickets.add(bookedTicket);
+        return bookedTicket;
     }
 
     public boolean isTaken(Seat seat) {
@@ -74,5 +89,28 @@ public class CinemaRoom {
 
     public boolean isNotCorrectRow(int row, CinemaRoom cinemaRoom) {
         return row <= 0 || row > cinemaRoom.getTotalRows();
+    }
+
+    public boolean isTokenExist(String token) {
+        for (BookedTicket bTicket : bookedTickets
+        ) {
+            if (bTicket.getToken().equals(token)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Ticket returnTicket(String token) {
+        for (BookedTicket bTicket : bookedTickets
+        ) {
+            if (bTicket.getToken().equals(token)) {
+                bookedTickets.remove(bTicket);
+                Ticket ticket =bTicket.getTicket();
+                ticket.setTaken(false);
+                return ticket;
+            }
+        }
+        return null;
     }
 }

@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Seat {
     private int row;
     private int column;
-    private int price;
 
-   public Seat(int row, int column, int price) {
+   public Seat(int row, int column) {
         this.row = row;
         this.column = column;
-        this.price = price;
     }
 
    public Seat() {
@@ -27,15 +25,6 @@ public class Seat {
 
     private boolean isTaken = false;
 
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-
     public int getRow() {
         return row;
     }
@@ -51,8 +40,6 @@ public class Seat {
     public void setColumn(int column) {
         this.column = column;
     }
-
-
 
 
 }
